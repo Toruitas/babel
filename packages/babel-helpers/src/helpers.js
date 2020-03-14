@@ -917,17 +917,35 @@ helpers.toConsumableArray = helper("7.0.0-beta.0")`
 `;
 
 helpers.arrayWithoutHoles = helper("7.0.0-beta.0")`
+  import arrayLikeToArray from "arrayLikeToArray";
+
   export default function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-      return arr2;
-    }
+    if (Array.isArray(arr)) return arrayLikeToArray(arr, arr.length);
   }
 `;
 
 helpers.arrayWithHoles = helper("7.0.0-beta.0")`
   export default function _arrayWithHoles(arr) {
     if (Array.isArray(arr)) return arr;
+  }
+`;
+
+helpers.maybeArrayLike = helper("7.9.0")`
+  import arrayLikeToArray from "arrayLikeToArray";
+
+  export default function _maybeArrayLike(next, arr, i) {
+    if (arr && !Array.isArray(arr) && typeof arr.length === "number") {
+      var len = arr.length;
+      return arrayLikeToArray(arr, i !== void 0 && i < len ? i : len);
+    }
+    return next(arr, i);
+  }
+`;
+
+helpers.arrayLikeToArray = helper("7.9.0")`
+  export default function _arrayLikeToArray(arr, len) {
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+    return arr2;
   }
 `;
 
