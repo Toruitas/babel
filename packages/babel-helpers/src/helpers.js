@@ -1009,10 +1009,13 @@ helpers.createForOfIteratorHelper = helper("7.9.0")`
   // e: error (called whenever something throws)
   // f: finish (always called at the end)
 
-  export default function _createForOfIteratorHelper(o) {
+  export default function _createForOfIteratorHelper(o, allowArrayLike) {
     if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {
       // Fallback for engines without symbol support
-      if (Array.isArray(o)) {
+      if (
+        Array.isArray(o) ||
+        (allowArrayLike && o && typeof o.length === "number")
+      ) {
         var i = 0;
         var F = function(){};
         return {
@@ -1056,12 +1059,15 @@ helpers.createForOfIteratorHelper = helper("7.9.0")`
 `;
 
 helpers.createForOfIteratorHelperLoose = helper("7.9.0")`
-  export default function _createForOfIteratorHelperLoose(o) {
+  export default function _createForOfIteratorHelperLoose(o, allowArrayLike) {
     var i = 0;
 
     if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {
       // Fallback for engines without symbol support
-      if (Array.isArray(o))
+      if (
+        Array.isArray(o) ||
+        (allowArrayLike && o && typeof o.length === "number")
+      )
         return function() {
           if (i >= o.length) return { done: true };
           return { done: false, value: o[i++] };
