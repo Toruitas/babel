@@ -219,10 +219,7 @@ export default class StatementParser extends ExpressionParser {
       case tt._export:
       case tt._import: {
         // "import await"? Skip ahead past the await and parse remainder as a normal import statement.
-        // Maybe should use a different method.
-        if (this.match(tt._import_await)) {
-          this.next(); // skip import
-        }
+        // Maybe should use a different method
 
         const nextTokenCharCode = this.lookaheadCharCode();
         if (
@@ -236,7 +233,17 @@ export default class StatementParser extends ExpressionParser {
           this.raise(this.state.start, Errors.UnexpectedImportExport);
         }
 
-        this.next(); // skip await, or import
+        this.next(); // move past import
+
+        if (this.match(tt._await)) {
+          const nextTokenCharCode = this.lookaheadCharCode();
+          if (
+            nextTokenCharCode === charCodes.leftParenthesis ||
+            nextTokenCharCode === charCodes.dot
+          ) {
+            break;
+          }
+        }
 
         let result;
         if (starttype === tt._import) {

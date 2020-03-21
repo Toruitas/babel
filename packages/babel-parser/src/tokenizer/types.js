@@ -163,6 +163,7 @@ export const types: { [name: string]: TokenType } = {
   }),
 
   // Keywords
+  _await: createKeyword("await"),
   _break: createKeyword("break"),
   _case: createKeyword("case", { beforeExpr }),
   _catch: createKeyword("catch"),
