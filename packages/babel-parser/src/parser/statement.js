@@ -235,12 +235,9 @@ export default class StatementParser extends ExpressionParser {
 
         this.next(); // move past import
 
-        if (this.match(tt._await)) {
+        if (this.eatContextual("await")) {
           const nextTokenCharCode = this.lookaheadCharCode();
-          if (
-            nextTokenCharCode === charCodes.leftParenthesis ||
-            nextTokenCharCode === charCodes.dot
-          ) {
+          if (nextTokenCharCode === charCodes.leftParenthesis) {
             break;
           }
         }
