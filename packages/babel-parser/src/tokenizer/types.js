@@ -190,6 +190,7 @@ export const types: { [name: string]: TokenType } = {
   _extends: createKeyword("extends", { beforeExpr }),
   _export: createKeyword("export"),
   _import: createKeyword("import", { startsExpr }),
+  _import_await: createKeyword("import await", { startsExpr }),
   _null: createKeyword("null", { startsExpr }),
   _true: createKeyword("true", { startsExpr }),
   _false: createKeyword("false", { startsExpr }),

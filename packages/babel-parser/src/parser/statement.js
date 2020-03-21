@@ -218,6 +218,12 @@ export default class StatementParser extends ExpressionParser {
         return this.parseEmptyStatement(node);
       case tt._export:
       case tt._import: {
+        // "import await"? Skip ahead past the await and parse remainder as a normal import statement.
+        // Maybe should use a different method.
+        if (this.match(tt._import_await)) {
+          this.next(); // skip import
+        }
+
         const nextTokenCharCode = this.lookaheadCharCode();
         if (
           nextTokenCharCode === charCodes.leftParenthesis ||
@@ -226,13 +232,11 @@ export default class StatementParser extends ExpressionParser {
           break;
         }
 
-        // TODO: Stu If next word is "await", check for a { and then check there's either .wat or .wasm in the import expression
-
         if (!this.options.allowImportExportEverywhere && !topLevel) {
           this.raise(this.state.start, Errors.UnexpectedImportExport);
         }
 
-        this.next();
+        this.next(); // skip await, or import
 
         let result;
         if (starttype === tt._import) {
