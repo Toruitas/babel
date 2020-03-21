@@ -218,6 +218,9 @@ export default class StatementParser extends ExpressionParser {
         return this.parseEmptyStatement(node);
       case tt._export:
       case tt._import: {
+        // "import await"? Skip ahead past the await and parse remainder as a normal import statement.
+        // Maybe should use a different method
+
         const nextTokenCharCode = this.lookaheadCharCode();
         if (
           nextTokenCharCode === charCodes.leftParenthesis ||
@@ -230,7 +233,14 @@ export default class StatementParser extends ExpressionParser {
           this.raise(this.state.start, Errors.UnexpectedImportExport);
         }
 
-        this.next();
+        this.next(); // move past import
+
+        if (this.eatContextual("await")) {
+          const nextTokenCharCode = this.lookaheadCharCode();
+          if (nextTokenCharCode === charCodes.leftParenthesis) {
+            break;
+          }
+        }
 
         let result;
         if (starttype === tt._import) {
@@ -2013,6 +2023,7 @@ export default class StatementParser extends ExpressionParser {
   parseImport(node: N.Node): N.AnyImport {
     // import '...'
     node.specifiers = [];
+    // TODO: Here may also be a good place. Seems to parse different kinds of imports.
     if (!this.match(tt.string)) {
       const hasDefault = this.maybeParseDefaultImportSpecifier(node);
       const parseNext = !hasDefault || this.eat(tt.comma);
