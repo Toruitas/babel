@@ -226,6 +226,8 @@ export default class StatementParser extends ExpressionParser {
           break;
         }
 
+        // TODO: Stu If next word is "await", check for a { and then check there's either .wat or .wasm in the import expression
+
         if (!this.options.allowImportExportEverywhere && !topLevel) {
           this.raise(this.state.start, Errors.UnexpectedImportExport);
         }
@@ -2013,6 +2015,7 @@ export default class StatementParser extends ExpressionParser {
   parseImport(node: N.Node): N.AnyImport {
     // import '...'
     node.specifiers = [];
+    // TODO: Here may also be a good place. Seems to parse different kinds of imports.
     if (!this.match(tt.string)) {
       const hasDefault = this.maybeParseDefaultImportSpecifier(node);
       const parseNext = !hasDefault || this.eat(tt.comma);
